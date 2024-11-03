@@ -1,0 +1,43 @@
+- name: Find mount point for the mysql volume
+  ansible.builtin.shell: "cat /etc/fstab | grep '/dev/disk/by-id/scsi-0HC_Volume_{{mysql_volume_id}}' | cut -d' ' -f2"
+  register: mount_point
+  changed_when: False
+  ignore_errors: True
+
+- name: unmount and remove mysql volume from fstab
+  ansible.posix.mount:
+    path: "{{ mount_point.stdout }}"
+    src: /dev/disk/by-id/scsi-0HC_Volume_{{mysql_volume_id}}
+    state: absent  
+  ignore_errors: True
+
+- name: mount mysql volume to /mnt/mysql
+  ansible.posix.mount:
+    path: /mnt/mysql
+    src: /dev/disk/by-id/scsi-0HC_Volume_{{mysql_volume_id}}
+    fstype: ext4
+    state: mounted
+
+- name: create db subdirectory in mysql
+  ansible.builtin.file:
+    path: /mnt/mysql/db
+    state: directory
+    owner: root
+    group: root
+
+- name: mount bind db subdirectory to /var/lib/mysql
+  ansible.posix.mount:
+    path: /var/lib/mysql
+    src: /mnt/mysql/db
+    fstype: ext4
+    state: mounted
+    opts: bind
+
+- name: make sure that /var/lib/mysql belongs to mysql
+  ansible.builtin.file:
+    path: /var/lib/mysql  
+    owner: mysql
+    group: mysql
+    recurse: yes
+    state: directory
+

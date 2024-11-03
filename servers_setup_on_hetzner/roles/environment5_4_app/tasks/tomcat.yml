@@ -1,0 +1,60 @@
+- name: Copy tomcat 8  files
+  ansible.builtin.copy:
+    src: "{{ item.file }}"
+    dest: "/tmp/{{ item.file }}"
+    owner: root
+    group: root
+    mode: '0640'
+  loop:
+    - { file: 'libtomcat8-java_8.5.30-1ubuntu1_all.deb' }
+    - { file: 'tomcat8-common_8.5.30-1ubuntu1_all.deb' }
+    - { file: 'tomcat8_8.5.30-1ubuntu1_all.deb' }
+
+- name: Install tomcat 8
+  ansible.builtin.apt:
+    deb: "/tmp/{{ item.file }}"
+    update_cache: yes
+  loop:
+    - { file: 'libtomcat8-java_8.5.30-1ubuntu1_all.deb' }
+    - { file: 'tomcat8-common_8.5.30-1ubuntu1_all.deb' }
+    - { file: 'tomcat8_8.5.30-1ubuntu1_all.deb' }
+
+- name: Create folder for heap dumps
+  ansible.builtin.file:
+    path: /var/HeapDumps
+    state: directory
+    mode: '0777'
+    recurse: true
+
+- name: Copy catalina.sh
+  ansible.builtin.copy:
+    src: catalina.sh
+    dest: /usr/share/tomcat8/bin/catalina.sh
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Execute java.postinst configure
+  ansible.builtin.shell:
+    cmd: /var/lib/dpkg/info/ca-certificates-java.postinst configure
+
+- name: Copy server.xml
+  ansible.builtin.copy:
+    src: server.xml
+    dest: /etc/tomcat8/server.xml
+    owner: root
+    group: tomcat8
+    mode: '0640'
+
+- name: Remove logs compressing daily job
+  ansible.builtin.file:
+   path: /etc/cron.daily/tomcat8
+   state: absent
+
+- name: Restart Tomcat
+  ansible.builtin.service:
+    name: tomcat8
+    state: restarted
+    enabled: yes
+
+ 

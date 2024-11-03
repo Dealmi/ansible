@@ -1,0 +1,12 @@
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+ 
+root /etc/nginx/error;
+ 
+location / {           
+  return 503;
+}
+ 
+error_page 503 /maintenance.html;
+ 
+location /maintenance.html {         
+}

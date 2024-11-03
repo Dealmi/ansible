@@ -1,0 +1,10 @@
+[Unit]
+Description=engine
+After=syslog.target
+[Service]
+User=tomcat8
+ExecStart=/usr/bin/java -Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -Xms8192m -Xmx8192m -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/var/log/virtualsports/gc.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/HeapDumps -XX:-OmitStackTraceInFastThrow -jar /var/virtualsports/webapps/engine.jar --spring.config.additional-location=file:///var/virtualsports/config/engine/app.properties
+SuccessExitStatus=143
+LimitNOFILE=65536
+[Install]
+WantedBy=multi-user.target

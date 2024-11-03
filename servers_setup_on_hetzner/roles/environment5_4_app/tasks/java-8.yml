@@ -1,0 +1,12 @@
+- name: Install Java JDK
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop: 
+    - openjdk-8-jdk
+    - openjdk-8-dbg
+    - openjdk-8-jre
+    - openjdk-8-jre-headless
+    - openjdk-8-jdk-headless
+

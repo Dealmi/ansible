@@ -1,0 +1,23 @@
+- name: Update cache
+  apt:
+    update_cache: true
+    upgrade: full
+
+- name: Install packages
+  apt:
+    pkg:
+      - net-tools
+      - iotop
+      - htop
+      - unzip 
+      - apparmor 
+      - awscli
+      - iotop 
+      - iftop 
+      - mlocate
+      - pv
+      - vim
+      - bash-completion
+      - gnupg
+      - ufw
+    state: present

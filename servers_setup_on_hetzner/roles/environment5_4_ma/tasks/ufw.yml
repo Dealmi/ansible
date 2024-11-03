@@ -1,0 +1,36 @@
+- name: Create default UFW rules
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    default: "{{ item.default }}"
+    state: "{{ item.state | default(omit) }}"
+  loop:
+    - { direction: 'incoming', default: 'deny', state: 'enabled' }
+    - { direction: 'outgoing', default: 'allow' }
+    - { direction: 'routed', default: 'deny' }
+
+- name: Allow access from app to mysql
+  community.general.ufw:
+    comment: Allow access from app to mysql
+    direction: in
+    rule: allow
+    to_port: 3306
+    from_ip: "{{app_ip}}"
+    proto: tcp
+
+- name: Allow access from slave to mysql
+  community.general.ufw:
+    comment: Allow access from slave to mysql
+    direction: in
+    rule: allow
+    to_port: 3306
+    from_ip: "{{slave_ip}}"
+    proto: tcp
+
+- name: Allow SSH from Bastion
+  community.general.ufw:
+    comment: Allow SSH from Bastion
+    direction: in
+    rule: allow
+    to_port: 22
+    from_ip: "{{bastion_ip}}"
+    proto: tcp

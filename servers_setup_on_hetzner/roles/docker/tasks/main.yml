@@ -1,0 +1,58 @@
+- name: Install Docker dependencies
+  apt:
+    pkg:
+      - ca-certificates
+      - curl
+      - gnupg
+      - jq
+      - apt-transport-https
+      - software-properties-common  
+    state: present
+    update_cache: true
+
+- name: Add an Docker signing key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://download.docker.com/linux/ubuntu {{os_name}} stable"
+    state: present
+    filename: docker
+
+- name: Create group docker
+  ansible.builtin.group:
+    name: docker
+    state: present
+    gid: 3000
+
+- name: Create user docker
+  ansible.builtin.user:
+    name: docker
+    uid: 3000
+    group: docker
+    create_home: false
+
+- name: Install Docker
+  apt:
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Enable and start docker
+  ansible.builtin.systemd:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: Enable and start containerd
+  ansible.builtin.systemd:
+    name: containerd
+    enabled: yes
+    state: started
+

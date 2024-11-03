@@ -1,0 +1,7 @@
+- include_tasks: restart_script.yml
+- include_tasks: nginx.yml
+- include_tasks: java-8.yml
+- include_tasks: tomcat.yml
+- include_tasks: engine.yml
+- include_tasks: redis_docker.yml
+

@@ -1,0 +1,5 @@
+---
+- hosts: sas2slave
+  become: true
+  roles:
+    - mount_sl

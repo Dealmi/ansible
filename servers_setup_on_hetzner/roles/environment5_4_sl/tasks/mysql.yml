@@ -1,0 +1,99 @@
+- name: Copy mysql_apt_config packet
+  ansible.builtin.copy:
+    src: mysql-apt-config_0.8.12-1_all.deb
+    dest: /tmp/mysql-apt-config_0.8.12-1_all.deb
+    mode: '0755'
+
+- name: Copy mysql repo setup script
+  ansible.builtin.copy:
+    src: mysql_repo_setup.sh
+    dest: /tmp/mysql_repo_setup.sh
+    mode: '0755'
+
+- name: Install mysql apt config
+  ansible.builtin.shell:
+    chdir: /tmp
+    cmd: /tmp/mysql_repo_setup.sh
+
+- name: Copy mysql setup script
+  ansible.builtin.copy:
+    src: mysql_setup.sh
+    dest: /tmp/mysql_setup.sh
+    mode: '0755'
+
+- name: Install mysql apt config
+  ansible.builtin.shell:
+    chdir: /tmp
+    cmd: /tmp/mysql_setup.sh
+
+- name: stop mysql service
+  ansible.builtin.service:
+    name: mysql
+    state: stopped
+
+- name: Create mysql temporary directory
+  ansible.builtin.file:
+    path: /var/lib/mysql/tmpdir
+    state: directory
+    mode: '0755'
+    owner: mysql
+    group: mysql
+    recurse: true
+
+- name: Copy mysqld config
+  ansible.builtin.copy:
+    src: mysqld.cnf
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: rename old logs mysql
+  ansible.builtin.shell:
+    cmd: find /var/lib/mysql -type f -name "ib_logfile?" -exec mv {} {}_OLD \;
+
+- name: Create mysql system override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/mysql.service.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+    recurse: true
+
+- name: Copy mysqld override config
+  ansible.builtin.copy:
+    src: override.conf
+    dest: /etc/systemd/system/mysql.service.d/override.conf
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Create directory for binary logs
+  ansible.builtin.file:
+    path: /etc/systemd/system/mysql.service.d
+    state: directory
+    mode: '0755'
+    owner: mysql
+    group: mysql
+    recurse: true
+
+- name: Copy mysqld apparmour config
+  ansible.builtin.copy:
+    src: usr.sbin.mysqld
+    dest: /etc/apparmor.d/usr.sbin.mysqld
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Restart service apparmor
+  ansible.builtin.service:
+    name: apparmor
+    state: restarted
+    enabled: yes
+
+- name: Start mysql service
+  ansible.builtin.service:
+    name: mysql
+    state: started
+

@@ -1,0 +1,6 @@
+---
+- hosts: sas2bastion 
+  become: true
+  roles:
+    - common
+    - ufw_bastion

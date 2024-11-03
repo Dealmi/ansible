@@ -1,0 +1,8 @@
+---
+- hosts: sas2master
+  become: true
+  roles:
+    - common
+    - mount_ma
+    - environment5_4_ma
+    

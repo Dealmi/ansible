@@ -1,0 +1,5 @@
+- name: Copy the restart script
+  ansible.builtin.copy:
+    src: server_restart.sh
+    dest: /usr/bin/server_restart.sh
+    mode: '0755'

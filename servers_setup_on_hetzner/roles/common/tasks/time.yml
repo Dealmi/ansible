@@ -1,0 +1,8 @@
+- name: Setting up a timezone
+  community.general.timezone:
+    name: Etc/UTC
+
+- name: Restart cron
+  service:
+    name: cron
+    state: restarted

@@ -1,0 +1,110 @@
+#- name: Add nginx apt repository
+#  ansible.builtin.apt_repository:
+#    repo: ppa:nginx/stable
+#    state: present
+#   update_cache: false
+
+- name: Install latest Nginx
+  ansible.builtin.apt:
+   name: nginx
+   state: present
+
+- name: Create etc nginx ssl directory
+  ansible.builtin.file:
+    path: /etc/nginx/ssl
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+    recurse: true
+
+- name: Copy certificates
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/nginx/ssl/"
+    owner: "root"
+    group: "root"
+    mode: "0660"
+  loop:
+    - "server.crt"
+    - "server.pem"
+    - "server.csr"
+
+- name: Copy nginx.conf to /etc/nginx
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy default.work
+  ansible.builtin.copy:
+    src: default.work
+    dest: /etc/nginx/sites-available/default.work
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy product.conf
+  ansible.builtin.copy:
+    src: product.conf
+    dest: /etc/nginx/product.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy custom.conf
+  ansible.builtin.copy:
+    src: custom.conf
+    dest: /etc/nginx/custom.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy default.maintenance
+  ansible.builtin.copy:
+    src: default.maintenance
+    dest: /etc/nginx/default.maintenance
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create a simlink of the default.work file
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/default.work
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+    force: yes
+
+- name: Create etc nginx error directory
+  ansible.builtin.file:
+    path: /etc/nginx/error
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+    recurse: true
+
+- name: Copy 404 error file
+  ansible.builtin.copy:
+    src: 404.html
+    dest: /etc/nginx/error/404.html
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy maintenance file
+  ansible.builtin.copy:
+    src: maintenance.html
+    dest: /etc/nginx/error/maintenance.html
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+    enabled: yes
+

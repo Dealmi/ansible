@@ -1,0 +1,7 @@
+---
+- hosts: sas2slave
+  become: true
+  roles:
+    - common
+    - mount_sl
+    - environment5_4_sl

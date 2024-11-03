@@ -1,0 +1,36 @@
+- name: Create default UFW rules
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    default: "{{ item.default }}"
+    state: "{{ item.state | default(omit) }}"
+  loop:
+    - { direction: 'incoming', default: 'deny', state: 'enabled' }
+    - { direction: 'outgoing', default: 'allow' }
+    - { direction: 'routed', default: 'deny' }
+
+- name: Allow SSH from Li office
+  community.general.ufw:
+    comment: Allow SSH from Li office
+    direction: in
+    rule: allow
+    to_port: 22
+    from_ip: 185.44.159.33
+    proto: tcp
+
+- name: Allow SSH from Vienna office
+  community.general.ufw:
+    comment: Allow SSH from Vienna office
+    direction: in
+    rule: allow
+    to_port: 22
+    from_ip: 91.112.16.224/29
+    proto: tcp
+
+- name: Allow SSH from wireguard network
+  community.general.ufw:
+    comment: Allow SSH from wireguard network
+    direction: in
+    rule: allow
+    to_port: 22
+    from_ip: 192.168.150.0/24
+    proto: tcp

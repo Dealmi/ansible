@@ -1,0 +1,36 @@
+- name: Create default UFW rules
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    default: "{{ item.default }}"
+    state: "{{ item.state | default(omit) }}"
+  loop:
+    - { direction: 'incoming', default: 'deny', state: 'enabled' }
+    - { direction: 'outgoing', default: 'allow' }
+    - { direction: 'routed', default: 'deny' }
+
+- name: Allow SSH from Bastion
+  community.general.ufw:
+    comment: Allow SSH from Bastion
+    direction: in
+    rule: allow
+    to_port: 22
+    from_ip: "{{bastion_ip}}"
+    proto: tcp
+
+- name: Allow https from balancer
+  community.general.ufw:
+    comment: Allow https from balancer
+    direction: in
+    rule: allow
+    to_port: 443
+    from_ip: "{{balancer_ip}}"
+    proto: tcp
+
+- name: Allow http from balancer
+  community.general.ufw:
+    comment: Allow http from balancer
+    direction: in
+    rule: allow
+    to_port: 80
+    from_ip: "{{balancer_ip}}"
+    proto: tcp

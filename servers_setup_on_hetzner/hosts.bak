@@ -1,0 +1,44 @@
+[sas2bastion]
+49.12.242.141
+
+[sas2bastion:vars]
+ansible_user = ansibleadm
+ansible_ssh_private_key_file = ~/.ssh/id_rsa_ansible
+
+[sas2app]
+10.0.0.2
+
+[sas2app:vars]
+bastion_ip=10.0.0.5
+balancer_ip=10.0.0.6
+os_name=jammy
+ansible_ssh_common_args='-o ProxyCommand="ssh -i ~/.ssh/id_rsa_ansible -W %h:%p -q ansibleadm@49.12.242.141"'
+ansible_user = ansibleadm
+ansible_ssh_private_key_file = ~/.ssh/id_rsa_ansible
+
+
+[sas2master]
+10.0.0.3
+
+[sas2master:vars]
+os_name=jammy
+app_ip=10.0.0.2
+slave_ip=10.0.0.4
+bastion_ip=10.0.0.5
+mysql_volume_id=100305302
+ansible_ssh_common_args='-o ProxyCommand="ssh -i ~/.ssh/id_rsa_ansible -W %h:%p -q ansibleadm@49.12.242.141"'
+ansible_user = ansibleadm
+ansible_ssh_private_key_file = ~/.ssh/id_rsa_ansible
+
+[sas2slave]
+10.0.0.4
+
+[sas2slave:vars]
+os_name=jammy
+bastion_ip=10.0.0.5
+mysql_volume_id=100315817
+backup_volume_id=100315816
+ansible_ssh_common_args='-o ProxyCommand="ssh -i ~/.ssh/id_rsa_ansible -W %h:%p -q ansibleadm@49.12.242.141"'
+ansible_user = ansibleadm
+ansible_ssh_private_key_file = ~/.ssh/id_rsa_ansible
+

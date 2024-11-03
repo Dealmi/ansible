@@ -1,0 +1,9 @@
+---
+- hosts: sas2app
+  become: true
+  roles:
+    - common
+    - docker
+    - environment5_4_app
+    - ufw
+    

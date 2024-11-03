@@ -1,0 +1,19 @@
+- name: Find mount point for the backup volume
+  ansible.builtin.shell: "cat /etc/fstab | grep '/dev/disk/by-id/scsi-0HC_Volume_{{backup_volume_id}}' | cut -d' ' -f2"
+  register: mount_point
+  changed_when: False
+  ignore_errors: True
+
+- name: unmount and remove backup volume from fstab
+  ansible.posix.mount:
+    path: "{{ mount_point.stdout }}"
+    src: /dev/disk/by-id/scsi-0HC_Volume_{{backup_volume_id}}
+    state: absent  
+  ignore_errors: True
+
+- name: mount backup volume to /media/backup
+  ansible.posix.mount:
+    path: /media/backup
+    src: /dev/disk/by-id/scsi-0HC_Volume_{{backup_volume_id}}
+    fstype: ext4
+    state: mounted

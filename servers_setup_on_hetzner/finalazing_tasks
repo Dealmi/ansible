@@ -1,0 +1,29 @@
+Add ansibleadm user and change hosts file  before deploying new servers.
+Add file /etc/sudoers.d/ansibleadm with content: "ansibleadm ALL=(ALL) NOPASSWD: ALL"
+Add id_rsa_ansible.pub (or whatever is used for ansibleadm) to bastion and servers behind it
+  for bastion use automated method:
+  ssh-copy-id -i ~/.ssh/mykey user@host
+  for the rest just copy the key to bastion:
+  scp -i .ssh/id_rsa_ansible .ssh/id_rsa_ansible ansibleadm@49.13.126.87:/home/ansibleadm/.ssh/id_rsa_ansible 
+  scp -i .ssh/id_rsa_ansible .ssh/id_rsa_ansible.pub ansibleadm@49.13.126.87:/home/ansibleadm/.ssh/id_rsa_ansible.pub
+  Then do automatic istallation of a public key using same method as with bastion. 
+  Failing this, do on servers the following: 
+       - mkdir ~/.ssh/
+       - cat id_rsa_ansible.pub > .ssh/authorized_keys
+       - chmod -R 700 ~/.ssh
+       - chown ansibleadm.ansibleadm .ssh/authorized_keys
+Check connection from ansible node with:
+  ssh -i ~/.ssh/id_rsa_ansible -o ProxyCommand="ssh -i ~/.ssh/id_rsa_ansible -W %h:%p ansibleadm@bastion-host" ansibleadm@target-server.internal
+
+
+After servers deployment, add user for yourself on every server with key-based autentification
+
+Add following users and passwords:
+Master - MySQL:
+  mediastream
+  root
+  repluser
+
+Slave  - MySQL
+  root
+

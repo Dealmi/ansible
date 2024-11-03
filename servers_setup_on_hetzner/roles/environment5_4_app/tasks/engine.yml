@@ -1,0 +1,22 @@
+- name: Create engine service
+  ansible.builtin.copy:
+    src: engine.service
+    dest: /etc/systemd/system/engine.service
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Make the engine as a service (autostart)
+  ansible.builtin.systemd:
+    name: engine.service
+    state: started
+    enabled: yes
+
+- name: Create virtualsports log directory
+  ansible.builtin.file:
+    path: /var/log/virtualsports
+    state: directory
+    mode: '0755'
+    owner: tomcat8
+    group: tomcat8
+    recurse: true

@@ -1,0 +1,14 @@
+- name: Copy systemd configuration for redis
+  ansible.builtin.copy:
+    src: redis.service
+    dest: /etc/systemd/system/redis.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: start redis service
+  systemd:
+    state: started
+    enabled: yes
+    name: redis
+    daemon_reload: yes
